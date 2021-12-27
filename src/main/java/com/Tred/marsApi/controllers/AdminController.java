@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/mars")
+@RequestMapping("/admin")
 public class AdminController {
 
-    @GetMapping("/martians")
+    @GetMapping("/users")
     public ResponseEntity<List<Martian>>getMartians(){
         return null;
     }
