@@ -7,10 +7,10 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "bases")
-public class Base {
+public class MartianCity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Getter
     private long id;
     @Getter @Setter
@@ -18,16 +18,11 @@ public class Base {
     @Getter @Setter
     private String coordinates;
 
-    public Base(){}
+    public MartianCity(){}
 
-    public Base(String baseName, String coordinates){
+    public MartianCity(String baseName, String coordinates){
         this.baseName = baseName;
         this.coordinates = coordinates;
-    }
-
-    @Override
-    public String toString() {
-        return "Base [id=" + id + ", baseName=" + baseName + ", coordinates=" + coordinates + "]";
     }
 
 }
