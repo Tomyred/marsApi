@@ -1,9 +1,11 @@
 package com.Tred.marsApi.controllers;
 
-import com.Tred.marsApi.models.Base;
+import com.Tred.marsApi.models.MartianCity;
 import com.Tred.marsApi.models.Martian;
-import com.Tred.marsApi.repository.BaseRepository;
+import com.Tred.marsApi.repository.MartianCityRepository;
 import com.Tred.marsApi.repository.MartianRepository;
+import com.Tred.marsApi.services.MartianCityService;
+import com.Tred.marsApi.services.MartianService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,154 +16,141 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/mars")
+@CrossOrigin(origins = "*")
+@RequestMapping("/v1/mars")
 public class MarsController {
 
     @Autowired
-    MartianRepository martianRepository;
+    MartianService martianService;
+
     @Autowired
-    BaseRepository baseRepository;
+    MartianCityService martianCityService;
 
     @GetMapping("/martians")
-    public ResponseEntity<List<Martian>> getAllMartians(@RequestParam(required = false) String faction) {
-        try {
-            List<Martian> martians = new ArrayList<Martian>();
-
-            if (faction == null)
-                martianRepository.findAll().forEach(martians::add);
-            else
-                martianRepository.findByFaction(faction).forEach(martians::add);
-
-            if (martians.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    public ResponseEntity<?> getAllMartians(){
+        try{
+            if(martianService.findAll() == null){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"Failed to get Martians\"}");
+            }else{
+                return ResponseEntity.status(HttpStatus.OK).body(martianService.findAll());
             }
-
-            return new ResponseEntity<>(martians, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\":\"INTERNAL_SERVER_ERROR\"}");
         }
     }
-
     @GetMapping("/martians/{id}")
-    public ResponseEntity<Martian> getMartianById(@PathVariable long id) {
-        Optional<Martian> martianData = martianRepository.findById(id);
+    public ResponseEntity<?> getMartianById(@PathVariable Long id){
+        try{
+            if(martianService.findById(id) == null){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"Martian not found\"}" );
+            }else{
+                return ResponseEntity.status(HttpStatus.OK).body(martianService.findById(id));
+            }
 
-        if (martianData.isPresent()) {
-            return new ResponseEntity<>(martianData.get(), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\":\"INTERNAL_SERVER_ERROR\"}" );
         }
     }
 
     @PostMapping("/martians")
-    public ResponseEntity<Martian> createMartian(@RequestBody Martian martian) {
-        try {
-            Martian _martian = martianRepository
-                    .save(new Martian(martian.getFirstName(),
-                            martian.getLastName(), martian.getAge(),
-                            martian.getFaction(), martian.getLegalId(),
-                            martian.getBaseId() ));
-            return new ResponseEntity<>(_martian, HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<?> saveMartian(@RequestBody Martian martian){
+        try{
+            return ResponseEntity.status(HttpStatus.OK).body(martianService.save(martian));
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\":\"INTERNAL_SERVER_ERROR\"}" );
         }
     }
 
     @PutMapping("/martians/{id}")
-    public ResponseEntity<Martian> updateMartian(@PathVariable long id, @RequestBody Martian martian) {
-        Optional<Martian> martianData = martianRepository.findById(id);
+    public ResponseEntity<?> updateMartian(@PathVariable Long id, @RequestBody Martian martian){
+        try{
+            if(martianService.update(id,martian) == null){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"Martian not found\"}" );
+            }else{
+                return ResponseEntity.status(HttpStatus.OK).body(martianService.update(id,martian));
+            }
 
-        if (martianData.isPresent()) {
-            Martian _martian = martianData.get();
-            _martian.setFirstName(martian.getFirstName());
-            _martian.setLastName(martian.getLastName());
-            _martian.setAge(martian.getAge());
-            _martian.setFaction(martian.getFaction());
-            _martian.setLegalId(martian.getLegalId());
-            _martian.setBaseId(martian.getBaseId());
-            return new ResponseEntity<>(martianRepository.save(_martian), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\":\"INTERNAL_SERVER_ERROR\"}" );
         }
     }
 
     @DeleteMapping("/martians/{id}")
-    public ResponseEntity<HttpStatus> deleteMartians(@PathVariable long id) {
-        try {
-            martianRepository.deleteById(id);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @GetMapping("/bases")
-    public ResponseEntity<List<Base>> getAllBases() {
-        try {
-            List<Base> bases = new ArrayList<Base>();
-
-            baseRepository.findAll().forEach(bases::add);
-
-            if (bases.isEmpty()) {
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    public ResponseEntity<?> deleteMartian(@PathVariable Long id){
+        try{
+            if(martianService.delete(id) == false){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"Martian not found\"}" );
             }else{
-                return new ResponseEntity<>(bases, HttpStatus.OK);
+                return ResponseEntity.status(HttpStatus.OK).body(martianService.delete(id));
             }
 
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\":\"INTERNAL_SERVER_ERROR\"}" );
+        }
+
+    }
+    @GetMapping("/bases")
+    public ResponseEntity<?> getAllMartiansCities(){
+        try{
+            if(martianCityService.findAll() == null){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"Failed to get Martians cities\"}");
+            }else{
+                return ResponseEntity.status(HttpStatus.OK).body(martianService.findAll());
+            }
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\":\"INTERNAL_SERVER_ERROR\"}");
         }
     }
 
     @GetMapping("/bases/{id}")
-    public ResponseEntity<Base> getBaseById(@PathVariable long id){
+    public ResponseEntity<?> getMartianCityById(@PathVariable Long id){
         try{
-            Optional<Base> baseData = baseRepository.findById(id);
-
-            if(baseData.isPresent()){
-                return new ResponseEntity<>(baseData.get(), HttpStatus.OK);
+            if(martianCityService.findById(id) == null){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"Martian city not found\"}" );
             }else{
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                return ResponseEntity.status(HttpStatus.OK).body(martianCityService.findById(id));
             }
-        }catch (Exception e){
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
 
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\":\"INTERNAL_SERVER_ERROR\"}" );
+        }
     }
 
     @PostMapping("/bases")
-    public ResponseEntity<Base> createBase(@RequestBody Base base) {
-        try {
-            Base _base = (Base) baseRepository.save(new Base(base.getBaseName(), base.getCoordinates()));
-            return new ResponseEntity<>(_base, HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<?> saveMartianCity(@RequestBody MartianCity martianCity){
+        try{
+            return ResponseEntity.status(HttpStatus.OK).body(martianCityService.save(martianCity));
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\":\"INTERNAL_SERVER_ERROR\"}" );
         }
     }
 
     @PutMapping("/bases/{id}")
-    public ResponseEntity<Base> updateBase(@PathVariable long id, @RequestBody Base base) {
-        Optional<Base> baseData = baseRepository.findById(id);
+    public ResponseEntity<?> updateMartianCity(@PathVariable Long id, @RequestBody MartianCity martianCity){
+        try{
+            if(martianCityService.update(id,martianCity) == null){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"Martian city not found\"}" );
+            }else{
+                return ResponseEntity.status(HttpStatus.OK).body(martianCityService.update(id,martianCity));
+            }
 
-        if (baseData.isPresent()) {
-            Base _base = baseData.get();
-            _base.setBaseName(base.getBaseName());
-            _base.setCoordinates(base.getCoordinates());
-
-            return new ResponseEntity<>(baseRepository.save(_base), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\":\"INTERNAL_SERVER_ERROR\"}" );
         }
     }
 
     @DeleteMapping("/bases/{id}")
-    public ResponseEntity<HttpStatus> deleteBase(@PathVariable long id) {
-        try {
-            baseRepository.deleteById(id);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+    public ResponseEntity<?> deleteMartianCity(@PathVariable Long id){
+        try{
+            if(martianCityService.delete(id) == false){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"Martian city not found\"}" );
+            }else{
+                return ResponseEntity.status(HttpStatus.OK).body(martianCityService.delete(id));
+            }
 
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\":\"INTERNAL_SERVER_ERROR\"}" );
+        }
+
+    }
 }
