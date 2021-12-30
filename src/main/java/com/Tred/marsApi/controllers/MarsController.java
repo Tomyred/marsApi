@@ -90,10 +90,10 @@ public class MarsController {
 
     }
     @GetMapping("/bases")
-    public ResponseEntity<?> getAllMartiansCities(){
+    public ResponseEntity<?> getAllMartianCities(){
         try{
             if(martianCityService.findAll() == null){
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"Failed to get Martians cities\"}");
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"Failed to get Martian cities\"}");
             }else{
                 return ResponseEntity.status(HttpStatus.OK).body(martianService.findAll());
             }

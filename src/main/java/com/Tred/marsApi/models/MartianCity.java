@@ -13,9 +13,9 @@ public class MartianCity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Getter
     private long id;
-    @Getter @Setter
+    @Getter @Setter @Column(name = "baseName")
     private String baseName;
-    @Getter @Setter
+    @Getter @Setter @Column(name = "coordinates")
     private String coordinates;
 
     public MartianCity(){}
