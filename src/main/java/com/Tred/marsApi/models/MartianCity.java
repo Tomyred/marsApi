@@ -6,7 +6,7 @@ import lombok.Setter;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "bases")
+@Table(name = "martianCity")
 public class MartianCity {
 
     @Id
