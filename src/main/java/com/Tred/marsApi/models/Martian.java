@@ -4,18 +4,16 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 import java.io.Serializable;
 
 @Entity
 @Table(name = "martians")
-public class Martian implements Serializable {
+@Audited
+public class Martian extends Base {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Getter
-    private long id;
     @Getter @Setter @Column(name = "firstName")
     private String firstName;
     @Getter @Setter @Column(name = "lastName")

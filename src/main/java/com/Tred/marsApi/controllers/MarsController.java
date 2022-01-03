@@ -2,18 +2,14 @@ package com.Tred.marsApi.controllers;
 
 import com.Tred.marsApi.models.MartianCity;
 import com.Tred.marsApi.models.Martian;
-import com.Tred.marsApi.repository.MartianCityRepository;
-import com.Tred.marsApi.repository.MartianRepository;
-import com.Tred.marsApi.services.MartianCityService;
-import com.Tred.marsApi.services.MartianService;
+import com.Tred.marsApi.services.MartianCityServiceImpl;
+import com.Tred.marsApi.services.MartianServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -21,15 +17,15 @@ import java.util.Optional;
 public class MarsController {
 
     @Autowired
-    MartianService martianService;
+    MartianServiceImpl martianServiceImpl;
 
     @Autowired
-    MartianCityService martianCityService;
+    MartianCityServiceImpl martianCityServiceImpl;
 
     @GetMapping("/martians")
     public ResponseEntity<?> getAllMartians(){
         try{
-            List<Martian> martians = martianService.findAll();
+            List<Martian> martians = martianServiceImpl.findAll();
             if(martians == null){
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"Failed to get Martians\"}");
             }else{
@@ -42,7 +38,7 @@ public class MarsController {
     @GetMapping("/martians/{id}")
     public ResponseEntity<?> getMartianById(@PathVariable Long id){
         try{
-            Martian martian = martianService.findById(id);
+            Martian martian = martianServiceImpl.findById(id);
             if(martian == null){
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"Martian not found\"}" );
             }else{
@@ -57,7 +53,7 @@ public class MarsController {
     @PostMapping("/martians")
     public ResponseEntity<?> saveMartian(@RequestBody Martian martian){
         try{
-            return ResponseEntity.status(HttpStatus.OK).body(martianService.save(martian));
+            return ResponseEntity.status(HttpStatus.OK).body(martianServiceImpl.save(martian));
         }catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\":\"INTERNAL_SERVER_ERROR\"}" );
         }
@@ -66,7 +62,7 @@ public class MarsController {
     @PutMapping("/martians/{id}")
     public ResponseEntity<?> updateMartian(@PathVariable Long id, @RequestBody Martian martian){
         try{
-            Martian updatedMartian = martianService.update(id,martian);
+            Martian updatedMartian = martianServiceImpl.update(id,martian);
             if(updatedMartian == null){
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"Martian not found\"}" );
             }else{
@@ -81,7 +77,7 @@ public class MarsController {
     @DeleteMapping("/martians/{id}")
     public ResponseEntity<?> deleteMartian(@PathVariable Long id){
         try{
-            boolean deleted = martianService.delete(id);
+            boolean deleted = martianServiceImpl.delete(id);
             if( deleted == false){
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"Martian not found\"}" );
             }else{
@@ -96,7 +92,7 @@ public class MarsController {
     @GetMapping("/martiancities")
     public ResponseEntity<?> getAllMartianCities(){
         try{
-            List<MartianCity> martianCities = martianCityService.findAll();
+            List<MartianCity> martianCities = martianCityServiceImpl.findAll();
             if(martianCities == null){
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"Failed to get Martian cities\"}");
             }else{
@@ -110,7 +106,7 @@ public class MarsController {
     @GetMapping("/martiancities/{id}")
     public ResponseEntity<?> getMartianCityById(@PathVariable Long id){
         try{
-            MartianCity martianCity = martianCityService.findById(id);
+            MartianCity martianCity = martianCityServiceImpl.findById(id);
             if( martianCity == null){
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"Martian city not found\"}" );
             }else{
@@ -125,7 +121,7 @@ public class MarsController {
     @PostMapping("/martiancities")
     public ResponseEntity<?> saveMartianCity(@RequestBody MartianCity martianCity){
         try{
-            return ResponseEntity.status(HttpStatus.OK).body(martianCityService.save(martianCity));
+            return ResponseEntity.status(HttpStatus.OK).body(martianCityServiceImpl.save(martianCity));
         }catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{\"error\":\"INTERNAL_SERVER_ERROR\"}" );
         }
@@ -134,7 +130,7 @@ public class MarsController {
     @PutMapping("/martiancities/{id}")
     public ResponseEntity<?> updateMartianCity(@PathVariable Long id, @RequestBody MartianCity martianCity){
         try{
-            MartianCity updatedCity = martianCityService.update(id,martianCity);
+            MartianCity updatedCity = martianCityServiceImpl.update(id,martianCity);
             if( updatedCity == null){
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"Martian city not found\"}" );
             }else{
@@ -149,7 +145,7 @@ public class MarsController {
     @DeleteMapping("/martiancities/{id}")
     public ResponseEntity<?> deleteMartianCity(@PathVariable Long id){
         try{
-            boolean deleted = martianCityService.delete(id);
+            boolean deleted = martianCityServiceImpl.delete(id);
             if(deleted == false){
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("{\"error\":\"Martian city not found\"}" );
             }else{
