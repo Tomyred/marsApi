@@ -2,17 +2,16 @@ package com.Tred.marsApi.models;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.envers.Audited;
 
 import javax.persistence.*;
 
 @Entity
-@Table(name = "martianCity")
-public class MartianCity {
+@Table(name = "martianCities")
+@Audited
+public class MartianCity extends Base{
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Getter
-    private long id;
+
     @Getter @Setter @Column(name = "baseName")
     private String baseName;
     @Getter @Setter @Column(name = "coordinates")
